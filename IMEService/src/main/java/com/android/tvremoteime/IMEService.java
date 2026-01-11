@@ -400,17 +400,15 @@ public class IMEService extends InputMethodService implements View.OnClickListen
 		//this.onFinishCandidatesView(true);
 	}
 	private void clickButtonByKey(final View v){
-		switch (v.getId()) {
-			case R.id.btnCaps:
-				v.setBackgroundResource(capsOn ? R.drawable.key_pressed_on : R.drawable.key_pressed_off);
-				break;
-			case R.id.btnClose:
-				this.hideWindowByKey = true;
-				this.finishInput();
-				return;
-			default:
-				v.setBackgroundResource(R.drawable.key_pressed);
-				break;
+		int id = v.getId();
+		if (id == R.id.btnCaps) {
+			v.setBackgroundResource(capsOn ? R.drawable.key_pressed_on : R.drawable.key_pressed_off);
+		} else if (id == R.id.btnClose) {
+			this.hideWindowByKey = true;
+			this.finishInput();
+			return;
+		} else {
+			v.setBackgroundResource(R.drawable.key_pressed);
 		}
 		clickButton(v, false);
 		handler.postDelayed(new Runnable() {
@@ -433,22 +431,17 @@ public class IMEService extends InputMethodService implements View.OnClickListen
 				commitText(((Button) v).getText().toString());
 			}
 		}else if(v instanceof ImageButton){
-			switch (v.getId()){
-				case R.id.btnEnter:
-					sendKeyCode(KeyEvent.KEYCODE_ENTER);
-					break;
-				case R.id.btnSpace:
-					sendKeyCode(KeyEvent.KEYCODE_SPACE);
-					break;
-				case R.id.btnDelete:
-					sendKeyCode(KeyEvent.KEYCODE_DEL);
-					break;
-				case R.id.btnCaps:
-					toggleCapsState(resetCapsButtonState);
-					break;
-				case R.id.btnHelp:
-					showHelpDialog();
-					break;
+			int id = v.getId();
+			if (id == R.id.btnEnter) {
+				sendKeyCode(KeyEvent.KEYCODE_ENTER);
+			} else if (id == R.id.btnSpace) {
+				sendKeyCode(KeyEvent.KEYCODE_SPACE);
+			} else if (id == R.id.btnDelete) {
+				sendKeyCode(KeyEvent.KEYCODE_DEL);
+			} else if (id == R.id.btnCaps) {
+				toggleCapsState(resetCapsButtonState);
+			} else if (id == R.id.btnHelp) {
+				showHelpDialog();
 			}
 		}
 	}

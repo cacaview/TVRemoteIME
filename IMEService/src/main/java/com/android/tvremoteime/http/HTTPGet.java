@@ -4,8 +4,6 @@ import android.util.Log;
 
 import com.android.tvremoteime.Environment;
 
-import org.apache.http.util.CharArrayBuffer;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -38,7 +36,7 @@ public class HTTPGet {
                     if (length < 0) {
                         length = 4096;
                     }
-                    CharArrayBuffer buffer = new CharArrayBuffer(length);
+                    StringBuilder buffer = new StringBuilder(length);
                     char[] tmp = new char[1024];
 
                     int l;

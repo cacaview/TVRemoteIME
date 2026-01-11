@@ -21,7 +21,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import com.afap.ijkplayer.R;
+import tv.danmaku.ijk.media.widget.R;
 
 
 public class Settings {

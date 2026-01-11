@@ -8,7 +8,7 @@ import android.view.View;
 import android.widget.TableLayout;
 
 
-import com.afap.ijkplayer.R;
+import tv.danmaku.ijk.media.widget.R;
 
 import java.util.Locale;
 

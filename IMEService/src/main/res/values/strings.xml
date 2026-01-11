@@ -3,5 +3,6 @@
     <string name="app_name">&name;</string>
     <string name="keyboard_name">&name;</string>
     <string name="step1">第一步：激活启用“&name;”输入法</string>
-    <string name="step2">第二步：设置“&name;”为系统默认输入法</string>
+    <string name="step2">第二步：设置"&name;"为系统默认输入法</string>
+    <string name="accessibility_service_description">启用此服务后，可以通过网页远程控制触控板/鼠标，无需ADB连接。</string>
 </resources>

@@ -21,7 +21,7 @@ import java.util.Comparator;
 import java.util.Map;
 
 import fi.iki.elonen.NanoHTTPD;
-import xllib.FileUtils;
+import com.android.tvremoteime.util.FileUtils;
 
 /**
  * Created by kingt on 2018/1/11.
@@ -29,9 +29,11 @@ import xllib.FileUtils;
 
 public class FileRequestProcesser  implements RequestProcesser {
     private Context context;
+    private SecurityManager securityManager;
 
     public FileRequestProcesser(Context context){
         this.context = context;
+        this.securityManager = SecurityManager.getInstance();
     }
 
     @Override
@@ -87,7 +89,12 @@ public class FileRequestProcesser  implements RequestProcesser {
     }
 
     private NanoHTTPD.Response responseDirData(String dirName) {
-        File path = new File(Environment.getExternalStorageDirectory(), dirName);
+        // Validate path to prevent path traversal
+        File path = securityManager.getSafeFile(dirName);
+        if (path == null) {
+            return RemoteServer.createPlainTextResponse(NanoHTTPD.Response.Status.FORBIDDEN, "Invalid path");
+        }
+
         String root = Environment.getExternalStorageDirectory().getPath();
         JSONArray dirs = new JSONArray();
         JSONArray files = new JSONArray();
@@ -127,7 +134,11 @@ public class FileRequestProcesser  implements RequestProcesser {
     }
 
     private NanoHTTPD.Response downloadFileData(String fileName){
-        File file = new File(Environment.getExternalStorageDirectory(), fileName);
+        // Validate path to prevent path traversal
+        File file = securityManager.getSafeFile(fileName);
+        if (file == null) {
+            return RemoteServer.createPlainTextResponse(NanoHTTPD.Response.Status.FORBIDDEN, "Invalid path");
+        }
         if(!file.exists()){
             return RemoteServer.createPlainTextResponse(NanoHTTPD.Response.Status.NOT_FOUND, "Error 404, file not found.");
         }
@@ -147,9 +158,13 @@ public class FileRequestProcesser  implements RequestProcesser {
         boolean r = false;
         if(!TextUtils.isEmpty(uploadFileName)) {
             if (!TextUtils.isEmpty(localFilename)) {
-                File saveFilename = new File(Environment.getExternalStorageDirectory(), uploadPathName);
+                // Validate path to prevent path traversal
+                File saveFilename = securityManager.getSafeFile(uploadPathName);
+                if (saveFilename == null) {
+                    return RemoteServer.createJSONResponse(NanoHTTPD.Response.Status.OK, "{\"success\":false,\"error\":\"Invalid path\"}");
+                }
                 File localFile = new File(localFilename);
-                saveFilename = new File(saveFilename,localFile.getName());
+                saveFilename = new File(saveFilename, localFile.getName());
                 r = localFile.renameTo(saveFilename);
             }
         }
@@ -160,32 +175,43 @@ public class FileRequestProcesser  implements RequestProcesser {
         String[] pathData = paths.split("\\|");
         for(String p : pathData){
             if(!TextUtils.isEmpty(p)) {
-                File path = new File(Environment.getExternalStorageDirectory(), p);
-                RemoteServerFileManager.deleteFile(path);
+                // Validate path to prevent path traversal
+                File path = securityManager.getSafeFile(p);
+                if (path != null) {
+                    RemoteServerFileManager.deleteFile(path);
+                }
             }
         }
     }
     private void batchCopyFile(String targetPath, String paths){
-        File targetPathFile = new File(Environment.getExternalStorageDirectory(), targetPath);
-        if(!targetPathFile.exists()) return;
+        // Validate target path
+        File targetPathFile = securityManager.getSafeFile(targetPath);
+        if(targetPathFile == null || !targetPathFile.exists()) return;
 
         String[] pathData = paths.split("\\|");
         for(String p : pathData){
             if(!TextUtils.isEmpty(p)) {
-                File source = new File(Environment.getExternalStorageDirectory(), p);
-                RemoteServerFileManager.copyFile(source, targetPathFile);
+                // Validate source path
+                File source = securityManager.getSafeFile(p);
+                if (source != null) {
+                    RemoteServerFileManager.copyFile(source, targetPathFile);
+                }
             }
         }
     }
     private void batchCutFile(String targetPath, String paths){
-        File targetPathFile = new File(Environment.getExternalStorageDirectory(), targetPath);
-        if(!targetPathFile.exists()) return;
+        // Validate target path
+        File targetPathFile = securityManager.getSafeFile(targetPath);
+        if(targetPathFile == null || !targetPathFile.exists()) return;
 
         String[] pathData = paths.split("\\|");
         for(String p : pathData){
             if(!TextUtils.isEmpty(p)) {
-                File source = new File(Environment.getExternalStorageDirectory(), p);
-                RemoteServerFileManager.cutFile(source, targetPathFile);
+                // Validate source path
+                File source = securityManager.getSafeFile(p);
+                if (source != null) {
+                    RemoteServerFileManager.cutFile(source, targetPathFile);
+                }
             }
         }
     }

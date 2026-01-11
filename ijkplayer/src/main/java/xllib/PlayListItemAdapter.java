@@ -1,13 +1,13 @@
 package xllib;
 
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.afap.ijkplayer.R;
+import tv.danmaku.ijk.media.widget.R;
 /**
  * Created by kingt on 2018/2/3.
  */

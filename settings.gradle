@@ -1,2 +1,21 @@
-// List all modules in root project
-include ':IMEService', ':thunder', ':ijkplayer', ':AdbLib', ':DroidDLNA'
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
+dependencyResolutionManagement {
+    repositoriesMode = RepositoriesMode.FAIL_ON_PROJECT_REPOS
+    repositories {
+        google()
+        mavenCentral()
+        maven { url 'https://jitpack.io' }
+        maven { url 'https://maven.aliyun.com/repository/public' }
+        maven { url 'https://maven.aliyun.com/repository/google' }
+    }
+}
+
+rootProject.name = "TVRemoteIME"
+include ':IMEService', ':AdbLib', ':DroidDLNA'

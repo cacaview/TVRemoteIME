@@ -1,32 +1,39 @@
-apply plugin: 'com.android.application'
+plugins {
+    id 'com.android.application'
+}
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion '27.0.3'
+    namespace 'com.android.tvremoteime'
+    compileSdk 36
+    buildToolsVersion "36.1.0"
 
     defaultConfig {
         applicationId 'com.android.tvremoteime'
-        minSdkVersion 14
-        targetSdkVersion 15
-        versionCode 11
-        versionName "1.4.1"
+        minSdk 21
+        targetSdk 36
+        versionCode 12
+        versionName "2.0.0"
     }
+
     buildTypes {
-        debug{
+        debug {
             minifyEnabled false
         }
-        release{
+        release {
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), '../proguard-project.txt'
         }
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile project(path: ':ijkplayer')
-    compile project(path: ':AdbLib')
-    compile project(path: ':DroidDLNA')
-
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation project(path: ':AdbLib')
+    implementation project(path: ':DroidDLNA')
+    implementation 'androidx.annotation:annotation:1.7.1'
 }

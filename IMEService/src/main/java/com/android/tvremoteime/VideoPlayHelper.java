@@ -5,38 +5,38 @@ import android.content.Intent;
 import android.net.Uri;
 import android.text.TextUtils;
 
-import fi.iki.elonen.NanoHTTPD;
-import player.XLVideoPlayActivity;
-import xllib.DownloadManager;
-import xllib.FileUtils;
-
 /**
- * Created by kingt on 2018/2/22.
+ * Helper class for video playback.
+ * Simplified version - uses system video player only.
  */
-
 public class VideoPlayHelper {
-    public static void playUrl(Context context, String url, int videoIndex, boolean useSystem){
-        if(useSystem) {
-            //外部播放
-            DownloadManager downloadManager = DownloadManager.instance();
-            downloadManager.init(context);
-            downloadManager.taskInstance().setUrl(url);
-            if(videoIndex > 0)downloadManager.taskInstance().changePlayItem(videoIndex);
-            downloadManager.taskInstance().startTask();
-            String playUrl = downloadManager.taskInstance().getPlayUrl();
-            if(!TextUtils.isEmpty(playUrl)) {
-                if(Environment.needDebug){
-                    Environment.debug(IMEService.TAG, "外部调用播放视频, playUrl=" + playUrl + ", video/*");
-                }
 
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setDataAndType(Uri.parse(playUrl), "video/*");
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(intent);
+    /**
+     * Play video URL using system player.
+     *
+     * @param context Android context
+     * @param url Video URL to play
+     * @param videoIndex Video index (unused in simplified version)
+     * @param useSystem Whether to use system player (always true in simplified version)
+     */
+    public static void playUrl(Context context, String url, int videoIndex, boolean useSystem) {
+        if (TextUtils.isEmpty(url)) {
+            return;
+        }
+
+        if (Environment.needDebug) {
+            Environment.debug(IMEService.TAG, "Playing video with system player, url=" + url);
+        }
+
+        try {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setDataAndType(Uri.parse(url), "video/*");
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
+        } catch (Exception e) {
+            if (Environment.needDebug) {
+                Environment.debug(IMEService.TAG, "Failed to play video: " + e.getMessage());
             }
-        }else {
-            //内部播放
-            XLVideoPlayActivity.intentTo(XLVideoPlayActivity.class, context, url, url, videoIndex);
         }
     }
 }

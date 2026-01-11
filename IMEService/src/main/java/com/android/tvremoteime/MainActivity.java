@@ -39,38 +39,35 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
-            case R.id.btnUseIME:
+        int id = v.getId();
+        if (id == R.id.btnUseIME) {
+            openInputMethodSettings();
+            if(Environment.isEnableIME(this)){
+                Environment.toast(getApplicationContext(), "太棒了，您已经激活启用了" + getString(R.string.keyboard_name) +"输入法！");
+            }
+        } else if (id == R.id.btnSetIME) {
+            if(!Environment.isEnableIME(this)) {
+                Environment.toast(getApplicationContext(), "抱歉，请您先激活启用" + getString(R.string.keyboard_name) +"输入法！");
                 openInputMethodSettings();
-                if(Environment.isEnableIME(this)){
-                    Environment.toast(getApplicationContext(), "太棒了，您已经激活启用了" + getString(R.string.keyboard_name) +"输入法！");
-                }
-                break;
-            case R.id.btnSetIME:
-                if(!Environment.isEnableIME(this)) {
-                    Environment.toast(getApplicationContext(), "抱歉，请您先激活启用" + getString(R.string.keyboard_name) +"输入法！");
-                    openInputMethodSettings();
-                    if(!Environment.isEnableIME(this)) return;
-                }
-                try {
-                    ((InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE)).showInputMethodPicker();
-                }catch (Exception ignored) {
-                    Environment.toast(getApplicationContext(), "抱歉，无法设置为系统默认输入法，请手动启动服务！");
-                }
-                if(Environment.isDefaultIME(this)){
-                    Environment.toast(getApplicationContext(), "太棒了，" + getString(R.string.keyboard_name) +"已是系统默认输入法！");
-                }
-                break;
-            case R.id.btnStartService:
-                startService(new Intent(IMEService.ACTION));
-                if(!Environment.isDefaultIME(this)) {
-                    if (AdbHelper.getInstance() == null) AdbHelper.createInstance();
-                }
-                Environment.toast(getApplicationContext(), "服务已手动启动，稍后可尝试访问控制端页面");
-                break;
-            case R.id.btnSetDLNA:
-                DLNAUtils.setDLNANameSuffix(this.getApplicationContext(), dlnaNameText.getText().toString());
-                break;
+                if(!Environment.isEnableIME(this)) return;
+            }
+            try {
+                ((InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE)).showInputMethodPicker();
+            }catch (Exception ignored) {
+                Environment.toast(getApplicationContext(), "抱歉，无法设置为系统默认输入法，请手动启动服务！");
+            }
+            if(Environment.isDefaultIME(this)){
+                Environment.toast(getApplicationContext(), "太棒了，" + getString(R.string.keyboard_name) +"已是系统默认输入法！");
+            }
+        } else if (id == R.id.btnStartService) {
+            // 使用显式Intent启动服务 (Android 5.0+要求)
+            startService(new Intent(this, IMEService.class));
+            if(!Environment.isDefaultIME(this)) {
+                if (AdbHelper.getInstance() == null) AdbHelper.createInstance();
+            }
+            Environment.toast(getApplicationContext(), "服务已手动启动，稍后可尝试访问控制端页面");
+        } else if (id == R.id.btnSetDLNA) {
+            DLNAUtils.setDLNANameSuffix(this.getApplicationContext(), dlnaNameText.getText().toString());
         }
         refreshQRCode();
     }

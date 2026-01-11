@@ -1,20 +1,4 @@
-buildscript {
-    repositories {
-        google()
-        jcenter()
-    }
-    dependencies {
-        // Android plugin for gradle
-        // http://google.github.io/android-gradle-dsl
-        classpath 'com.android.tools.build:gradle:3.1.0'
-    }
-}
-allprojects {
-    repositories {
-        google()
-        jcenter()
-    }
-}
-task clean(type: Delete) {
-    delete rootProject.buildDir
+plugins {
+    id 'com.android.application' version '8.5.0' apply false
+    id 'com.android.library' version '8.5.0' apply false
 }

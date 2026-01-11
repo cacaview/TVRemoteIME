@@ -1,5 +1,57 @@
-# 小盒精灵（TVRemoteIME） 
+# 小盒精灵（TVRemoteIME）
 电视盒子的管理精灵，可跨屏远程输入、跨屏远程控制盒子、远程文件管理、HTTP/RTMP/MMS网络视频直播、ED2K/种子文件的视频文件边下边播、视频投屏（DLNA）
+
+> 本项目 Fork 自 [newPersonKing/TVRemoteIME](https://github.com/newPersonKing/TVRemoteIME)
+
+---
+
+## 更新日志（Fork 版本）
+
+### 2025-01 更新
+
+#### 新增功能：触控板/鼠标控制（基于辅助功能服务）
+
+使用 Android AccessibilityService 实现远程触控板功能，替代原有的 ADB 方案，更简单稳定。
+
+**优势对比：**
+
+| 对比项 | 原 ADB 方案 | 新辅助功能方案 |
+|--------|-------------|----------------|
+| 配置复杂度 | 高（需开启 ADB TCP 模式、授权） | 低（只需启用辅助功能） |
+| 连接稳定性 | 可能断开 | 稳定 |
+| 权限要求 | USB 调试权限 | 辅助功能权限 |
+| Android 版本 | 任意 | 7.0+ (API 24+) |
+
+**新增文件：**
+- `IMEService/src/main/java/com/android/tvremoteime/mouse/MouseAccessibilityService.java` - 辅助功能服务
+- `IMEService/src/main/java/com/android/tvremoteime/mouse/MouseCursorOverlay.java` - 鼠标光标悬浮窗
+- `IMEService/src/main/res/xml/accessibility_service_config.xml` - 辅助功能配置
+- `IMEService/src/main/res/drawable/mouse_cursor.xml` - 鼠标光标图标
+
+**API 端点：**
+
+| 端点 | 方法 | 说明 |
+|------|------|------|
+| `/mouse/status` | GET | 获取服务状态和鼠标位置 |
+| `/mouse/move` | POST | 移动鼠标 (参数: dx, dy) |
+| `/mouse/click` | POST | 点击 (参数: button - 0=左键, 1=右键) |
+| `/mouse/scroll` | POST | 滚动 (参数: dy) |
+| `/mouse/show` | POST | 显示光标 |
+| `/mouse/hide` | POST | 隐藏光标 |
+
+**使用方法：**
+1. 安装应用后，进入系统设置 → 辅助功能
+2. 找到"小盒精灵"并启用
+3. 通过网页控制端即可使用触控板功能，屏幕上会显示鼠标光标
+
+#### 构建环境升级
+
+- Gradle 升级至 8.5
+- Android Gradle Plugin 升级至 8.5.0
+- compileSdkVersion 升级至 36
+- 修复 Android 5.0+ 显式 Intent 要求的兼容性问题
+
+---
 
 # 应用的诞生
 自从家里有电视盒子以来，电视收看、电影播放、娱乐小游戏什么的都是直接在盒子里运行，因为电视屏幕比起手机屏幕大，玩起来那效果是手机没法比的，但是在娱乐的过程中也总是有一些不便，比如玩游戏过程中想聊天什么的，在电视盒子里输入文字用遥控器按？只有用过才知道痛苦！外挂物理键盘，可惜很多输入法都不支持物理键盘的同时输入，远远达不到电脑的效果！于是找了很多遥控与跨屏输入的软件，但可惜没有一款是比较理想的，特别家里的一个创维Q+二代盒子，只要一进游戏的聊天界面，不管外面设置了什么跨屏输入法，都会自动切换为厂家自带的百度输入法，非常的可恶！于是就有了自己做一款远程跨屏的输入法，于是这小盒精灵（TVRemoteIME）就这样诞生了…………  

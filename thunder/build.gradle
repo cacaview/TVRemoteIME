@@ -1,16 +1,15 @@
-apply plugin: 'com.android.library'
+plugins {
+    id 'com.android.library'
+}
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion '27.0.3'
+    namespace 'com.xunlei.downloadlib'
+    compileSdk 36
+    buildToolsVersion "36.1.0"
 
     defaultConfig {
-        minSdkVersion 12
-        targetSdkVersion 15
-        versionCode 1
-        versionName "1.0"
-
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        minSdk 21
+        targetSdk 36
     }
     buildTypes {
         release {
@@ -18,15 +17,12 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    /**androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })**/
-    //compile 'com.android.support:appcompat-v7:25.3.1'
-    //compile 'io.reactivex:rxandroid:1.1.0'
-    //compile 'io.reactivex:rxjava:1.1.0'
-    //testCompile 'junit:junit:4.12'
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
 }

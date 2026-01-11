@@ -1,20 +1,18 @@
 /*
  * RenderPlayerService.java
- * Description:
- * Author: zxt
+ * Description: Service for DLNA rendering
+ * Simplified version using system player
  */
 
 package com.zxt.dlna.dmr;
 
-import com.zxt.dlna.dmp.GPlayer;
 import com.zxt.dlna.dmp.IJKPlayer;
 import com.zxt.dlna.util.Action;
 
 import android.app.Service;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.IBinder;
-
-import player.XLVideoPlayActivity;
 
 public class RenderPlayerService extends Service {
 
@@ -23,24 +21,25 @@ public class RenderPlayerService extends Service {
 	}
 
 	public void onStart(Intent intent, int startId) {
-		//xgf fix bug null point
 		if (null != intent) {
 			super.onStart(intent, startId);
 			String type = intent.getStringExtra("type");
-			Intent intent2;
 
-			if (type.equals("audio") ||  type.equals("video")) {
-				IJKPlayer.intentTo(IJKPlayer.class,this, intent.getStringExtra("playURI"),intent.getStringExtra("name"));
-				/**
-				intent2 = new Intent(this, IJKPlayer.class);
-				intent2.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-				intent2.putExtra("videoTitle", intent.getStringExtra("name"));
-				intent2.putExtra("videoPath", intent.getStringExtra("playURI"));
-				intent2.putExtra("videoIndex", 0);
-				startActivity(intent2);
-				 **/
+			if (type != null && (type.equals("audio") || type.equals("video"))) {
+				// Use system player
+				String playURI = intent.getStringExtra("playURI");
+				if (playURI != null) {
+					try {
+						Intent playIntent = new Intent(Intent.ACTION_VIEW);
+						playIntent.setDataAndType(Uri.parse(playURI), "video/*");
+						playIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+						startActivity(playIntent);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
 			} else {
-				intent2 = new Intent(Action.DMR);
+				Intent intent2 = new Intent(Action.DMR);
 				intent2.putExtra("playpath", intent.getStringExtra("playURI"));
 				sendBroadcast(intent2);
 			}

@@ -20,8 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fi.iki.elonen.*;
-import xllib.DownloadManager;
-import xllib.DownloadTask;
 
 public class RemoteServerFileManager implements NanoHTTPD.TempFileManager {
     static File baseDir = new File(Environment.getExternalStorageDirectory(), "tvremoteime");
@@ -110,12 +108,7 @@ public class RemoteServerFileManager implements NanoHTTPD.TempFileManager {
             try{
                 if(!filesDir.exists())filesDir.mkdirs();
                 if(!tmpDataDir.exists())tmpDataDir.mkdirs();
-                DownloadTask.setBaseDirGetter(new DownloadTask.DownloadTaskBaseDirGetter() {
-                    @Override
-                    public File getBaseDir() {
-                        return playerCacheDir;
-                    }
-                });
+                if(!playerCacheDir.exists())playerCacheDir.mkdirs();
             }catch (Exception ignored){}
             return new RemoteServerFileManager();
         }

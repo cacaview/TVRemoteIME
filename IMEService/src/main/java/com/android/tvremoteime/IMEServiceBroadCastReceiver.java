@@ -23,7 +23,9 @@ public class IMEServiceBroadCastReceiver extends BroadcastReceiver {
                MEDIA_MOUNTED.equals(intent.getAction())) {
            if(!Environment.isDefaultIME(context)) {
                Log.d(TAG, "startService.....");
-               context.startService(new Intent(IMEService.ACTION));
+               // 使用显式Intent启动服务 (Android 5.0+要求)
+               Intent serviceIntent = new Intent(context, IMEService.class);
+               context.startService(serviceIntent);
                if(AdbHelper.getInstance() == null) AdbHelper.createInstance();
            }
        }
