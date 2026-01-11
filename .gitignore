@@ -40,12 +40,22 @@ captures/
 .idea/gradle.xml
 .idea/dictionaries
 .idea/libraries
+.idea/caches/
+.idea/AndroidProjectSystem.xml
+.idea/deploymentTargetSelector.xml
+.idea/migrations.xml
+.idea/markdown.xml
+.idea/compiler.xml
+.idea/misc.xml
+.idea/runConfigurations.xml
+.idea/modules.xml
 
 # Keystore files
 *.jks
 
 # External native build folder generated in Android Studio 2.2 and later
 .externalNativeBuild
+.cxx/
 
 # Google Services (e.g. APIs or Firebase)
 google-services.json
@@ -61,5 +71,16 @@ freeline_project_description.json
 #raw
 raw/
 
-#bat
+# Scripts and temp files
 *.bat
+*.ps1
+nul
+
+# Claude Code
+.claude/
+
+# Extracted/temp files
+released/apk_extracted/
+
+# Screenshots (temp)
+screenshot*.png
