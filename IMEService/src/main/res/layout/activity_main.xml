@@ -119,6 +119,34 @@
             android:layout_marginTop="5dp"
             android:layout_marginBottom="5dp"
             />
+        <!-- 触控板辅助功能设置 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="5dp">
+            <TextView
+                android:layout_marginTop="2dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:text="触控板功能：启用辅助功能服务"/>
+            <Button
+                android:id="@+id/btnAccessibility"
+                android:layout_marginLeft="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="38dp"
+                android:text="去设置"
+                android:onClick="onClick"/>
+            <TextView
+                android:id="@+id/tvAccessibilityStatus"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#FF5722"
+                android:text="未启用"/>
+        </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
