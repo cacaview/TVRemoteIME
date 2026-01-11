@@ -84,3 +84,6 @@ released/apk_extracted/
 
 # Screenshots (temp)
 screenshot*.png
+
+# Proguard mapping
+proguardMapping.txt
