@@ -46,10 +46,25 @@
 
 #### 构建环境升级
 
-- Gradle 升级至 8.5
-- Android Gradle Plugin 升级至 8.5.0
+- Gradle 升级至 8.13
+- Android Gradle Plugin 升级至 8.7.0
 - compileSdkVersion 升级至 36
 - 修复 Android 5.0+ 显式 Intent 要求的兼容性问题
+- 修复 ProGuard 配置兼容性问题
+
+**构建命令：**
+
+```bash
+# 构建 Debug 版本（已签名，可直接安装）
+./gradlew assembleDebug
+
+# 构建 Release 版本（未签名，需要签名后才能安装）
+./gradlew assembleRelease
+```
+
+**输出位置：**
+- Debug APK: `IMEService/build/outputs/apk/debug/IMEService-debug.apk`
+- Release APK: `IMEService/build/outputs/apk/release/IMEService-release-unsigned.apk`
 
 ---
 
