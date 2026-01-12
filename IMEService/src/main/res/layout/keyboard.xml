@@ -1,308 +1,251 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#444"
-    android:padding="10dp"
+    android:background="@color/md_theme_surface"
+    android:elevation="8dp"
     android:focusable="true">
 
+    <!-- Number Row -->
     <LinearLayout
         android:id="@+id/topLine"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="@dimen/kb_key_height"
-        android:layout_centerHorizontal="true"
-        android:focusable="true">
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <Button
-            style="@style/btn_input_style"
-            android:text="1" />
+        <Button style="@style/btn_input_style" android:text="1" />
+        <Button style="@style/btn_input_style" android:text="2" />
+        <Button style="@style/btn_input_style" android:text="3" />
+        <Button style="@style/btn_input_style" android:text="4" />
+        <Button style="@style/btn_input_style" android:text="5" />
+        <Button style="@style/btn_input_style" android:text="6" />
+        <Button style="@style/btn_input_style" android:text="7" />
+        <Button style="@style/btn_input_style" android:text="8" />
+        <Button style="@style/btn_input_style" android:text="9" />
+        <Button style="@style/btn_input_style" android:text="0" />
 
-        <Button
-            style="@style/btn_input_style"
-            android:text="2" />
-
-        <Button
-            style="@style/btn_input_style"
-            android:text="3" />
-
-        <Button
-            style="@style/btn_input_style"
-            android:text="4" />
-
-        <Button
-            style="@style/btn_input_style"
-            android:text="5" />
-
-        <Button
-            style="@style/btn_input_style"
-            android:text="6" />
-
-        <Button
-            style="@style/btn_input_style"
-            android:text="7" />
-
-        <Button
-            style="@style/btn_input_style"
-            android:text="8" />
-
-        <Button
-            style="@style/btn_input_style"
-            android:text="9" />
-
-        <Button
-            style="@style/btn_input_style"
-            android:text="0" />
     </LinearLayout>
 
+    <!-- QWERTY Row -->
     <LinearLayout
         android:id="@+id/qweLine"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="@dimen/kb_key_height"
-        android:layout_below="@+id/topLine"
-        android:layout_centerHorizontal="true"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginTop="@dimen/kb_key_margin_top"
-        android:focusable="true">
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/topLine">
 
-        <Button
-            style="@style/btn_input_style"
-            android:text="Q" />
+        <Button style="@style/btn_input_style" android:text="Q" />
+        <Button style="@style/btn_input_style" android:text="W" />
+        <Button style="@style/btn_input_style" android:text="E" />
+        <Button style="@style/btn_input_style" android:text="R" />
+        <Button style="@style/btn_input_style" android:text="T" />
+        <Button style="@style/btn_input_style" android:text="Y" />
+        <Button style="@style/btn_input_style" android:text="U" />
+        <Button style="@style/btn_input_style" android:text="I" />
+        <Button style="@style/btn_input_style" android:text="O" />
+        <Button style="@style/btn_input_style" android:text="P" />
 
-        <Button
-            style="@style/btn_input_style"
-            android:text="W" />
-
-        <Button
-            style="@style/btn_input_style"
-            android:text="E" />
-
-        <Button
-            style="@style/btn_input_style"
-            android:text="R" />
-
-        <Button
-            style="@style/btn_input_style"
-            android:text="T" />
-
-        <Button
-            style="@style/btn_input_style"
-            android:text="Y" />
-
-        <Button
-            style="@style/btn_input_style"
-            android:text="U" />
-
-        <Button
-            style="@style/btn_input_style"
-            android:text="I" />
-
-        <Button
-            style="@style/btn_input_style"
-            android:text="O" />
-
-        <Button
-            style="@style/btn_input_style"
-            android:text="P" />
     </LinearLayout>
 
+    <!-- ASDF Row -->
     <LinearLayout
         android:id="@+id/asdLine"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="@dimen/kb_key_height"
-        android:layout_below="@+id/qweLine"
-        android:layout_centerHorizontal="true"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginTop="@dimen/kb_key_margin_top"
-        android:focusable="true">
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/qweLine">
 
-        <Button
-            style="@style/btn_input_style"
-            android:text="A" />
-
-        <Button
-            style="@style/btn_input_style"
-            android:text="S" />
-
-        <Button
-            style="@style/btn_input_style"
-            android:text="D" />
-
-        <Button
-            style="@style/btn_input_style"
-            android:text="F" />
-
-        <Button
-            style="@style/btn_input_style"
-            android:text="G" />
-
-        <Button
-            style="@style/btn_input_style"
-            android:text="H" />
-
-        <Button
-            style="@style/btn_input_style"
-            android:text="J" />
-
-        <Button
-            style="@style/btn_input_style"
-            android:text="K" />
-
-        <Button
-            style="@style/btn_input_style"
-            android:text="L" />
+        <Button style="@style/btn_input_style" android:text="A" />
+        <Button style="@style/btn_input_style" android:text="S" />
+        <Button style="@style/btn_input_style" android:text="D" />
+        <Button style="@style/btn_input_style" android:text="F" />
+        <Button style="@style/btn_input_style" android:text="G" />
+        <Button style="@style/btn_input_style" android:text="H" />
+        <Button style="@style/btn_input_style" android:text="J" />
+        <Button style="@style/btn_input_style" android:text="K" />
+        <Button style="@style/btn_input_style" android:text="L" />
 
         <ImageButton
             android:id="@+id/btnDelete"
             style="@style/btn_input_style"
             android:layout_width="wrap_content"
-            android:src="@drawable/delete_icon" />
+            android:src="@drawable/delete_icon"
+            android:contentDescription="Delete" />
+
     </LinearLayout>
 
+    <!-- ZXCV Row -->
     <LinearLayout
         android:id="@+id/zxcLine"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="@dimen/kb_key_height"
-        android:layout_below="@+id/asdLine"
-        android:layout_centerHorizontal="true"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginTop="@dimen/kb_key_margin_top"
-        android:focusable="true">
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/asdLine">
 
         <ImageButton
             android:id="@+id/btnCaps"
             style="@style/btn_input_style"
             android:layout_width="wrap_content"
             android:src="@drawable/shift_icon"
-            android:background="@drawable/key_off"/>
+            android:background="@drawable/key_off"
+            android:contentDescription="Caps Lock" />
 
-        <Button
-            style="@style/btn_input_style"
-            android:text="Z" />
-
-        <Button
-            style="@style/btn_input_style"
-            android:text="X" />
-
-        <Button
-            style="@style/btn_input_style"
-            android:text="C" />
-
-        <Button
-            style="@style/btn_input_style"
-            android:text="V" />
-
-        <Button
-            style="@style/btn_input_style"
-            android:text="B" />
-
-        <Button
-            style="@style/btn_input_style"
-            android:text="N" />
-
-        <Button
-            style="@style/btn_input_style"
-            android:text="M" />
+        <Button style="@style/btn_input_style" android:text="Z" />
+        <Button style="@style/btn_input_style" android:text="X" />
+        <Button style="@style/btn_input_style" android:text="C" />
+        <Button style="@style/btn_input_style" android:text="V" />
+        <Button style="@style/btn_input_style" android:text="B" />
+        <Button style="@style/btn_input_style" android:text="N" />
+        <Button style="@style/btn_input_style" android:text="M" />
 
         <ImageButton
             android:id="@+id/btnEnter"
             style="@style/btn_input_style"
             android:layout_width="wrap_content"
-            android:src="@drawable/enter_icon" />
+            android:src="@drawable/enter_icon"
+            android:contentDescription="Enter" />
+
     </LinearLayout>
 
+    <!-- Bottom Row -->
     <LinearLayout
         android:id="@+id/bottomLine"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="@dimen/kb_key_height"
-        android:layout_below="@+id/zxcLine"
-        android:layout_centerHorizontal="true"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginTop="@dimen/kb_key_margin_top"
-        android:focusable="true">
+        android:layout_marginBottom="8dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/zxcLine">
 
-        <Button
-            style="@style/btn_input_style"
-            android:text="," />
-
-        <Button
-            style="@style/btn_input_style"
-            android:text="." />
-
-        <Button
-            style="@style/btn_input_style"
-            android:text=":" />
+        <Button style="@style/btn_input_style" android:text="," />
+        <Button style="@style/btn_input_style" android:text="." />
+        <Button style="@style/btn_input_style" android:text=":" />
 
         <ImageButton
             android:id="@+id/btnSpace"
             style="@style/btn_input_style"
             android:layout_width="wrap_content"
-            android:src="@drawable/space_icon" />
+            android:src="@drawable/space_icon"
+            android:contentDescription="Space" />
 
-        <Button
-            style="@style/btn_input_style"
-            android:text="\?" />
-
-        <Button
-            style="@style/btn_input_style"
-            android:text="/" />
-
-        <Button
-            style="@style/btn_input_style"
-            android:text="\\" />
+        <Button style="@style/btn_input_style" android:text="\?" />
+        <Button style="@style/btn_input_style" android:text="/" />
+        <Button style="@style/btn_input_style" android:text="\\" />
 
         <ImageButton
             android:id="@+id/btnHelp"
-            android:src="@drawable/net_icon"
+            style="@style/btn_input_style"
             android:layout_width="wrap_content"
-            style="@style/btn_input_style" />
+            android:src="@drawable/net_icon"
+            android:contentDescription="Help" />
+
         <Button
             android:id="@+id/btnClose"
             style="@style/btn_input_style"
             android:text="▲" />
+
     </LinearLayout>
-    <RelativeLayout
+
+    <!-- Help Dialog -->
+    <com.google.android.material.card.MaterialCardView
         android:id="@+id/helpDialog"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentTop="true"
-        android:background="#d5d1d1"
-        android:visibility="gone">
-        <RelativeLayout
-            android:id="@+id/titlelayout"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:visibility="gone"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_alignParentTop="true"
-            android:background="#4a4a4a"
-            android:padding="5dp">
-            <TextView
-                android:id="@+id/title"
+            android:orientation="vertical">
+
+            <!-- Dialog Header -->
+            <LinearLayout
+                android:id="@+id/titlelayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:text="远程输入请扫描或直接访问以下地址：Version "
-                android:textColor="#ffffff"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-        </RelativeLayout>
-        <LinearLayout
-            android:layout_width="320dp"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/titlelayout"
-            android:orientation="vertical"
-            android:padding="10dp"
-            android:background="#d5d1d1"
-            android:layout_centerInParent="true">
-            <ImageView
-                android:id="@+id/ivQRCode"
-                android:layout_width="@dimen/qrWH"
-                android:layout_height="@dimen/qrWH" />
-            <TextView
-                android:id="@+id/tvAddress"
+                android:background="@color/md_theme_primary"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="16dp">
+
+                <TextView
+                    android:id="@+id/title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="远程输入请扫描或直接访问以下地址"
+                    android:textColor="@color/md_theme_onPrimary"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <!-- Dialog Content -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text=""
-                android:textSize="16sp"
-                android:textColor="#845909"
-                android:layout_marginTop="10dp" />
+                android:background="@color/md_theme_surface"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="24dp">
+
+                <ImageView
+                    android:id="@+id/ivQRCode"
+                    android:layout_width="@dimen/qrWH"
+                    android:layout_height="@dimen/qrWH"
+                    android:background="@color/md_theme_surfaceVariant"
+                    android:padding="8dp"
+                    android:contentDescription="QR Code" />
+
+                <TextView
+                    android:id="@+id/tvAddress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:gravity="center"
+                    android:text=""
+                    android:textColor="@color/md_theme_primary"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
         </LinearLayout>
-    </RelativeLayout>
-</RelativeLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
