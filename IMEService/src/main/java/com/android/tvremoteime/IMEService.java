@@ -18,8 +18,8 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.view.ViewGroup;
 
 import com.android.tvremoteime.server.RemoteServer;
 import com.android.tvremoteime.server.RemoteServerFileManager;
@@ -35,7 +35,7 @@ public class IMEService extends InputMethodService implements View.OnClickListen
 	private boolean capsOn = false;
 	private ImageButton btnCaps = null;
 	private View focusedView = null;
-	private RelativeLayout mInputView = null;
+	private ViewGroup mInputView = null;
 	private boolean hideWindowByKey = false;
 
 	private View helpDialog = null;
@@ -77,7 +77,7 @@ public class IMEService extends InputMethodService implements View.OnClickListen
 		if(Environment.needDebug){
 			Environment.debug(TAG, "onCreateInputView.");
 		}
-    	mInputView = (RelativeLayout)getLayoutInflater().inflate(R.layout.keyboard, null);
+    	mInputView = (ViewGroup)getLayoutInflater().inflate(R.layout.keyboard, null);
 
 		capsOn = true;
 		btnCaps = mInputView.findViewById(R.id.btnCaps);
@@ -89,9 +89,17 @@ public class IMEService extends InputMethodService implements View.OnClickListen
 		qrCodeImage = helpDialog.findViewById(R.id.ivQRCode);
 		addressView = helpDialog.findViewById(R.id.tvAddress);
 
+		// 为ImageButton设置点击监听器
+		btnCaps.setOnClickListener(this);
+		mInputView.findViewById(R.id.btnDelete).setOnClickListener(this);
+		mInputView.findViewById(R.id.btnSpace).setOnClickListener(this);
+		mInputView.findViewById(R.id.btnEnter).setOnClickListener(this);
+		mInputView.findViewById(R.id.btnHelp).setOnClickListener(this);
+		mInputView.findViewById(R.id.btnClose).setOnClickListener(this);
+
 		toggleCapsState(true);
 
-        return mInputView; 
+        return mInputView;
     }
 
 	@Override
@@ -394,30 +402,27 @@ public class IMEService extends InputMethodService implements View.OnClickListen
 		focusedView.requestFocusFromTouch();
 	}
 	private void finishInput(){
-		this.onFinishInput();
-		this.hideWindow();
-		//this.onFinishInputView(true);
-		//this.onFinishCandidatesView(true);
+		this.requestHideSelf(0);
 	}
 	private void clickButtonByKey(final View v){
 		int id = v.getId();
 		if (id == R.id.btnCaps) {
-			v.setBackgroundResource(capsOn ? R.drawable.key_pressed_on : R.drawable.key_pressed_off);
+			v.setBackgroundResource(capsOn ? R.drawable.key_special_on : R.drawable.key_special_off);
 		} else if (id == R.id.btnClose) {
 			this.hideWindowByKey = true;
 			this.finishInput();
 			return;
 		} else {
-			v.setBackgroundResource(R.drawable.key_pressed);
+			v.setBackgroundResource(R.drawable.key_modern);
 		}
 		clickButton(v, false);
 		handler.postDelayed(new Runnable() {
 			@Override
 			public void run() {
 				if(v == btnCaps){
-					v.setBackgroundResource(capsOn ? R.drawable.key_on : R.drawable.key_off);
+					v.setBackgroundResource(capsOn ? R.drawable.key_special_on : R.drawable.key_special_off);
 				}else{
-					v.setBackgroundResource(R.drawable.key);
+					v.setBackgroundResource(R.drawable.key_modern);
 				}
 				v.requestFocus();
 			}
@@ -457,7 +462,7 @@ public class IMEService extends InputMethodService implements View.OnClickListen
 	private void toggleCapsState(boolean resetCapsButtonState){
 		capsOn = !capsOn;
 		if(resetCapsButtonState)
-			btnCaps.setBackgroundResource(capsOn ? R.drawable.key_on : R.drawable.key_off);
+			btnCaps.setBackgroundResource(capsOn ? R.drawable.key_special_on : R.drawable.key_special_off);
 		resetButtonChar(qweLine);
 		resetButtonChar(asdLine);
 		resetButtonChar(zxcLine);

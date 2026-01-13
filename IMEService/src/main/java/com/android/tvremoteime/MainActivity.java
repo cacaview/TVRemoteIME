@@ -43,6 +43,15 @@ public class MainActivity extends Activity implements View.OnClickListener {
         this.setTitle(this.getResources().getString( R.string.app_name) + "  V" + AppPackagesHelper.getCurrentPackageVersion(this));
         dlnaNameText.setText(DLNAUtils.getDLNANameSuffix(this.getApplicationContext()));
 
+        // 设置按钮点击监听器
+        findViewById(R.id.btnUseIME).setOnClickListener(this);
+        findViewById(R.id.btnSetIME).setOnClickListener(this);
+        findViewById(R.id.btnStartService).setOnClickListener(this);
+        findViewById(R.id.btnSetDLNA).setOnClickListener(this);
+        if (accessibilityButton != null) {
+            accessibilityButton.setOnClickListener(this);
+        }
+
         refreshQRCode();
         updateAccessibilityStatus();
     }

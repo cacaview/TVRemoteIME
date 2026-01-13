@@ -353,48 +353,6 @@
 
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Support Section -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            style="@style/CardStyle">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="8dp">
-
-                <TextView
-                    style="@style/SectionTitle"
-                    android:text="支持与反馈" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="遇到问题？加入QQ群：7149348"
-                    style="@style/BodyText" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="喜欢这个应用？欢迎赞赏支持作者：）"
-                    style="@style/BodyText" />
-
-                <ImageView
-                    android:id="@+id/ivReward"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:adjustViewBounds="true"
-                    android:src="@drawable/reward"
-                    android:contentDescription="赞赏二维码" />
-
-            </LinearLayout>
-
-        </com.google.android.material.card.MaterialCardView>
-
     </LinearLayout>
 
 </ScrollView>
