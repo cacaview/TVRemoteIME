@@ -12,6 +12,8 @@ import android.util.Log;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
 
+import com.android.tvremoteime.adb.AdbHelper;
+
 /**
  * 辅助功能服务 - 用于模拟鼠标/触控板操作
  * 替代原来的ADB方案，更简单稳定
@@ -52,6 +54,16 @@ public class MouseAccessibilityService extends AccessibilityService {
 
         initScreenSize();
         initCursorOverlay();
+
+        // 初始化AdbHelper作为回退方案
+        if (AdbHelper.getInstance() == null) {
+            AdbHelper.createInstance();
+            Log.i(TAG, "AdbHelper instance created");
+        }
+        // 初始化ADB服务连接
+        if (AdbHelper.initService(this)) {
+            Log.i(TAG, "AdbHelper service initialized");
+        }
     }
 
     @Override
@@ -138,20 +150,19 @@ public class MouseAccessibilityService extends AccessibilityService {
 
     /**
      * 鼠标点击
-     * @param button 按钮 (0=左键, 1=右键/长按, 2=中键)
+     * @param button 按钮 (0=左键, 1=右键/返回, 2=中键)
      * @return 是否成功
      */
     public boolean click(int button) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            Log.e(TAG, "dispatchGesture requires API 24+");
-            return false;
-        }
-
         if (button == 1) {
-            // 右键 - 长按
-            return performLongClick(mouseX, mouseY);
+            // 右键 - 执行返回操作（符合安卓设备鼠标操作习惯）
+            return performGlobalAction(GLOBAL_ACTION_BACK);
         } else {
             // 左键或中键 - 普通点击
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                Log.e(TAG, "dispatchGesture requires API 24+");
+                return false;
+            }
             return performClick(mouseX, mouseY);
         }
     }
@@ -179,7 +190,7 @@ public class MouseAccessibilityService extends AccessibilityService {
      */
     private boolean performClick(int x, int y) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            return false;
+            return performClickViaShell(x, y);
         }
 
         Path clickPath = new Path();
@@ -192,17 +203,52 @@ public class MouseAccessibilityService extends AccessibilityService {
             .addStroke(stroke)
             .build();
 
+        final int clickX = x;
+        final int clickY = y;
+
         return dispatchGesture(gesture, new GestureResultCallback() {
             @Override
             public void onCompleted(GestureDescription gestureDescription) {
-                Log.d(TAG, "Click completed at " + x + "," + y);
+                Log.d(TAG, "Click completed at " + clickX + "," + clickY);
             }
 
             @Override
             public void onCancelled(GestureDescription gestureDescription) {
-                Log.w(TAG, "Click cancelled at " + x + "," + y);
+                Log.w(TAG, "Click cancelled at " + clickX + "," + clickY + ", trying shell fallback");
+                // 手势被取消时，尝试使用shell命令
+                performClickViaShell(clickX, clickY);
             }
         }, null);
+    }
+
+    /**
+     * 通过shell命令执行点击（回退方案）
+     */
+    private boolean performClickViaShell(int x, int y) {
+        // 尝试使用AdbHelper
+        AdbHelper adbHelper = AdbHelper.getInstance();
+        Log.w(TAG, "performClickViaShell: AdbHelper instance: " + (adbHelper != null ? "exists" : "null"));
+        if (adbHelper != null) {
+            Log.w(TAG, "performClickViaShell: AdbHelper isRunning: " + adbHelper.isRunning());
+        }
+        if (adbHelper != null && adbHelper.isRunning()) {
+            String command = String.format("shell:input tap %d %d", x, y);
+            adbHelper.sendData(command);
+            Log.w(TAG, "ADB click executed at " + x + "," + y);
+            return true;
+        }
+
+        // 回退到Runtime.exec（可能没有权限）
+        try {
+            String command = String.format("input tap %d %d", x, y);
+            Log.w(TAG, "Trying Runtime.exec: " + command);
+            Runtime.getRuntime().exec(command);
+            Log.w(TAG, "Shell click executed at " + x + "," + y);
+            return true;
+        } catch (Exception e) {
+            Log.e(TAG, "Shell click failed", e);
+            return false;
+        }
     }
 
     /**
@@ -210,7 +256,7 @@ public class MouseAccessibilityService extends AccessibilityService {
      */
     private boolean performLongClick(int x, int y) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            return false;
+            return performLongClickViaShell(x, y);
         }
 
         Path clickPath = new Path();
@@ -223,17 +269,47 @@ public class MouseAccessibilityService extends AccessibilityService {
             .addStroke(stroke)
             .build();
 
+        final int clickX = x;
+        final int clickY = y;
+
         return dispatchGesture(gesture, new GestureResultCallback() {
             @Override
             public void onCompleted(GestureDescription gestureDescription) {
-                Log.d(TAG, "Long click completed at " + x + "," + y);
+                Log.d(TAG, "Long click completed at " + clickX + "," + clickY);
             }
 
             @Override
             public void onCancelled(GestureDescription gestureDescription) {
-                Log.w(TAG, "Long click cancelled at " + x + "," + y);
+                Log.w(TAG, "Long click cancelled at " + clickX + "," + clickY + ", trying shell fallback");
+                // 手势被取消时，尝试使用shell命令
+                performLongClickViaShell(clickX, clickY);
             }
         }, null);
+    }
+
+    /**
+     * 通过shell命令执行长按（回退方案）
+     */
+    private boolean performLongClickViaShell(int x, int y) {
+        // 尝试使用AdbHelper
+        AdbHelper adbHelper = AdbHelper.getInstance();
+        if (adbHelper != null && adbHelper.isRunning()) {
+            String command = String.format("shell:input swipe %d %d %d %d 600", x, y, x, y);
+            adbHelper.sendData(command);
+            Log.d(TAG, "ADB long click executed at " + x + "," + y);
+            return true;
+        }
+
+        // 回退到Runtime.exec（可能没有权限）
+        try {
+            String command = String.format("input swipe %d %d %d %d 600", x, y, x, y);
+            Runtime.getRuntime().exec(command);
+            Log.d(TAG, "Shell long click executed at " + x + "," + y);
+            return true;
+        } catch (Exception e) {
+            Log.e(TAG, "Shell long click failed", e);
+            return false;
+        }
     }
 
     /**
