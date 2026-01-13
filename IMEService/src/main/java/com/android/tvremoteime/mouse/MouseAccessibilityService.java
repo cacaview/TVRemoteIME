@@ -254,16 +254,16 @@ public class MouseAccessibilityService extends AccessibilityService {
     /**
      * 执行长按手势
      */
-    private boolean performLongClick(int x, int y) {
+    private boolean performLongClick(int x, int y, int duration) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            return performLongClickViaShell(x, y);
+            return performLongClickViaShell(x, y, duration);
         }
 
         Path clickPath = new Path();
         clickPath.moveTo(x, y);
 
         GestureDescription.StrokeDescription stroke =
-            new GestureDescription.StrokeDescription(clickPath, 0, 600); // 600ms长按
+            new GestureDescription.StrokeDescription(clickPath, 0, duration);
 
         GestureDescription gesture = new GestureDescription.Builder()
             .addStroke(stroke)
@@ -271,6 +271,7 @@ public class MouseAccessibilityService extends AccessibilityService {
 
         final int clickX = x;
         final int clickY = y;
+        final int clickDuration = duration;
 
         return dispatchGesture(gesture, new GestureResultCallback() {
             @Override
@@ -282,7 +283,7 @@ public class MouseAccessibilityService extends AccessibilityService {
             public void onCancelled(GestureDescription gestureDescription) {
                 Log.w(TAG, "Long click cancelled at " + clickX + "," + clickY + ", trying shell fallback");
                 // 手势被取消时，尝试使用shell命令
-                performLongClickViaShell(clickX, clickY);
+                performLongClickViaShell(clickX, clickY, clickDuration);
             }
         }, null);
     }
@@ -290,21 +291,21 @@ public class MouseAccessibilityService extends AccessibilityService {
     /**
      * 通过shell命令执行长按（回退方案）
      */
-    private boolean performLongClickViaShell(int x, int y) {
+    private boolean performLongClickViaShell(int x, int y, int duration) {
         // 尝试使用AdbHelper
         AdbHelper adbHelper = AdbHelper.getInstance();
         if (adbHelper != null && adbHelper.isRunning()) {
-            String command = String.format("shell:input swipe %d %d %d %d 600", x, y, x, y);
+            String command = String.format("shell:input swipe %d %d %d %d %d", x, y, x, y, duration);
             adbHelper.sendData(command);
-            Log.d(TAG, "ADB long click executed at " + x + "," + y);
+            Log.d(TAG, "ADB long click executed at " + x + "," + y + " duration=" + duration);
             return true;
         }
 
         // 回退到Runtime.exec（可能没有权限）
         try {
-            String command = String.format("input swipe %d %d %d %d 600", x, y, x, y);
+            String command = String.format("input swipe %d %d %d %d %d", x, y, x, y, duration);
             Runtime.getRuntime().exec(command);
-            Log.d(TAG, "Shell long click executed at " + x + "," + y);
+            Log.d(TAG, "Shell long click executed at " + x + "," + y + " duration=" + duration);
             return true;
         } catch (Exception e) {
             Log.e(TAG, "Shell long click failed", e);
@@ -349,6 +350,108 @@ public class MouseAccessibilityService extends AccessibilityService {
      */
     public int[] getMousePosition() {
         return new int[]{mouseX, mouseY};
+    }
+
+    /**
+     * 执行上划手势
+     * @param distance 滑动距离（像素）
+     * @return 是否成功
+     */
+    public boolean swipeUp(int distance) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            return performSwipeViaShell(mouseX, mouseY, mouseX, mouseY - distance);
+        }
+
+        int startY = mouseY;
+        int endY = Math.max(0, mouseY - distance);
+        return performSwipeWithFallback(mouseX, startY, mouseX, endY, 200);
+    }
+
+    /**
+     * 执行下划手势
+     * @param distance 滑动距离（像素）
+     * @return 是否成功
+     */
+    public boolean swipeDown(int distance) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            return performSwipeViaShell(mouseX, mouseY, mouseX, mouseY + distance);
+        }
+
+        int startY = mouseY;
+        int endY = Math.min(screenHeight - 1, mouseY + distance);
+        return performSwipeWithFallback(mouseX, startY, mouseX, endY, 200);
+    }
+
+    /**
+     * 执行长按
+     * @param duration 长按时间（毫秒）
+     * @return 是否成功
+     */
+    public boolean longClick(int duration) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            return performLongClickViaShell(mouseX, mouseY, duration);
+        }
+        return performLongClick(mouseX, mouseY, duration);
+    }
+
+    /**
+     * 执行滑动手势（带回退）
+     */
+    private boolean performSwipeWithFallback(int startX, int startY, int endX, int endY, int duration) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            return performSwipeViaShell(startX, startY, endX, endY);
+        }
+
+        Path swipePath = new Path();
+        swipePath.moveTo(startX, startY);
+        swipePath.lineTo(endX, endY);
+
+        GestureDescription.StrokeDescription stroke =
+            new GestureDescription.StrokeDescription(swipePath, 0, duration);
+
+        GestureDescription gesture = new GestureDescription.Builder()
+            .addStroke(stroke)
+            .build();
+
+        final int fStartX = startX, fStartY = startY, fEndX = endX, fEndY = endY;
+
+        return dispatchGesture(gesture, new GestureResultCallback() {
+            @Override
+            public void onCompleted(GestureDescription gestureDescription) {
+                Log.d(TAG, "Swipe completed from " + fStartX + "," + fStartY + " to " + fEndX + "," + fEndY);
+            }
+
+            @Override
+            public void onCancelled(GestureDescription gestureDescription) {
+                Log.w(TAG, "Swipe cancelled, trying shell fallback");
+                performSwipeViaShell(fStartX, fStartY, fEndX, fEndY);
+            }
+        }, null);
+    }
+
+    /**
+     * 通过shell命令执行滑动（回退方案）
+     */
+    private boolean performSwipeViaShell(int startX, int startY, int endX, int endY) {
+        // 尝试使用AdbHelper
+        AdbHelper adbHelper = AdbHelper.getInstance();
+        if (adbHelper != null && adbHelper.isRunning()) {
+            String command = String.format("shell:input swipe %d %d %d %d 200", startX, startY, endX, endY);
+            adbHelper.sendData(command);
+            Log.d(TAG, "ADB swipe executed from " + startX + "," + startY + " to " + endX + "," + endY);
+            return true;
+        }
+
+        // 回退到Runtime.exec（可能没有权限）
+        try {
+            String command = String.format("input swipe %d %d %d %d 200", startX, startY, endX, endY);
+            Runtime.getRuntime().exec(command);
+            Log.d(TAG, "Shell swipe executed from " + startX + "," + startY + " to " + endX + "," + endY);
+            return true;
+        } catch (Exception e) {
+            Log.e(TAG, "Shell swipe failed", e);
+            return false;
+        }
     }
 
     /**

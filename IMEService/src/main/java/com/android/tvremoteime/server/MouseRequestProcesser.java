@@ -19,12 +19,15 @@ import fi.iki.elonen.NanoHTTPD;
  * 使用辅助功能服务实现，无需ADB连接
  *
  * 端点:
- * - POST /mouse/move   - 相对移动鼠标 (参数: dx, dy)
- * - POST /mouse/click  - 鼠标点击 (参数: button - 0=左键, 1=右键, 2=中键)
- * - POST /mouse/scroll - 滚轮滚动 (参数: dy)
- * - GET  /mouse/status - 获取鼠标状态和辅助功能服务状态
- * - POST /mouse/show   - 显示鼠标光标
- * - POST /mouse/hide   - 隐藏鼠标光标
+ * - POST /mouse/move      - 相对移动鼠标 (参数: dx, dy)
+ * - POST /mouse/click     - 鼠标点击 (参数: button - 0=左键, 1=右键, 2=中键)
+ * - POST /mouse/scroll    - 滚轮滚动 (参数: dy)
+ * - POST /mouse/swipeup   - 上划手势 (参数: distance - 滑动距离，默认300)
+ * - POST /mouse/swipedown - 下划手势 (参数: distance - 滑动距离，默认300)
+ * - POST /mouse/longclick - 长按 (参数: duration - 长按时间ms，默认600)
+ * - GET  /mouse/status    - 获取鼠标状态和辅助功能服务状态
+ * - POST /mouse/show      - 显示鼠标光标
+ * - POST /mouse/hide      - 隐藏鼠标光标
  */
 public class MouseRequestProcesser implements RequestProcesser {
     private static final String TAG = "MouseRequestProcesser";
@@ -43,6 +46,9 @@ public class MouseRequestProcesser implements RequestProcesser {
                 case "/mouse/move":
                 case "/mouse/click":
                 case "/mouse/scroll":
+                case "/mouse/swipeup":
+                case "/mouse/swipedown":
+                case "/mouse/longclick":
                 case "/mouse/show":
                 case "/mouse/hide":
                     return true;
@@ -79,6 +85,12 @@ public class MouseRequestProcesser implements RequestProcesser {
                 return handleMouseClick(params, service);
             case "/mouse/scroll":
                 return handleMouseScroll(params, service);
+            case "/mouse/swipeup":
+                return handleSwipeUp(params, service);
+            case "/mouse/swipedown":
+                return handleSwipeDown(params, service);
+            case "/mouse/longclick":
+                return handleLongClick(params, service);
             case "/mouse/show":
                 return handleShowCursor(service);
             case "/mouse/hide":
@@ -214,5 +226,95 @@ public class MouseRequestProcesser implements RequestProcesser {
         service.hideCursor();
         return RemoteServer.createJSONResponse(NanoHTTPD.Response.Status.OK,
                 "{\"status\":\"ok\"}");
+    }
+
+    /**
+     * 处理上划手势
+     * 参数: distance (滑动距离，默认300)
+     */
+    private NanoHTTPD.Response handleSwipeUp(Map<String, String> params, MouseAccessibilityService service) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            return RemoteServer.createJSONResponse(NanoHTTPD.Response.Status.OK,
+                    "{\"status\":\"error\",\"message\":\"需要Android 7.0或更高版本\"}");
+        }
+
+        try {
+            int distance = Integer.parseInt(params.getOrDefault("distance", "300"));
+            // 限制范围
+            distance = Math.max(50, Math.min(1000, distance));
+
+            boolean success = service.swipeUp(distance);
+
+            if (success) {
+                return RemoteServer.createJSONResponse(NanoHTTPD.Response.Status.OK,
+                        "{\"status\":\"ok\"}");
+            } else {
+                return RemoteServer.createJSONResponse(NanoHTTPD.Response.Status.OK,
+                        "{\"status\":\"error\",\"message\":\"swipe up failed\"}");
+            }
+        } catch (NumberFormatException e) {
+            return RemoteServer.createJSONResponse(NanoHTTPD.Response.Status.OK,
+                    "{\"status\":\"error\",\"message\":\"invalid params\"}");
+        }
+    }
+
+    /**
+     * 处理下划手势
+     * 参数: distance (滑动距离，默认300)
+     */
+    private NanoHTTPD.Response handleSwipeDown(Map<String, String> params, MouseAccessibilityService service) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            return RemoteServer.createJSONResponse(NanoHTTPD.Response.Status.OK,
+                    "{\"status\":\"error\",\"message\":\"需要Android 7.0或更高版本\"}");
+        }
+
+        try {
+            int distance = Integer.parseInt(params.getOrDefault("distance", "300"));
+            // 限制范围
+            distance = Math.max(50, Math.min(1000, distance));
+
+            boolean success = service.swipeDown(distance);
+
+            if (success) {
+                return RemoteServer.createJSONResponse(NanoHTTPD.Response.Status.OK,
+                        "{\"status\":\"ok\"}");
+            } else {
+                return RemoteServer.createJSONResponse(NanoHTTPD.Response.Status.OK,
+                        "{\"status\":\"error\",\"message\":\"swipe down failed\"}");
+            }
+        } catch (NumberFormatException e) {
+            return RemoteServer.createJSONResponse(NanoHTTPD.Response.Status.OK,
+                    "{\"status\":\"error\",\"message\":\"invalid params\"}");
+        }
+    }
+
+    /**
+     * 处理长按
+     * 参数: duration (长按时间ms，默认600)
+     */
+    private NanoHTTPD.Response handleLongClick(Map<String, String> params, MouseAccessibilityService service) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            return RemoteServer.createJSONResponse(NanoHTTPD.Response.Status.OK,
+                    "{\"status\":\"error\",\"message\":\"需要Android 7.0或更高版本\"}");
+        }
+
+        try {
+            int duration = Integer.parseInt(params.getOrDefault("duration", "600"));
+            // 限制范围
+            duration = Math.max(200, Math.min(3000, duration));
+
+            boolean success = service.longClick(duration);
+
+            if (success) {
+                return RemoteServer.createJSONResponse(NanoHTTPD.Response.Status.OK,
+                        "{\"status\":\"ok\"}");
+            } else {
+                return RemoteServer.createJSONResponse(NanoHTTPD.Response.Status.OK,
+                        "{\"status\":\"error\",\"message\":\"long click failed\"}");
+            }
+        } catch (NumberFormatException e) {
+            return RemoteServer.createJSONResponse(NanoHTTPD.Response.Status.OK,
+                    "{\"status\":\"error\",\"message\":\"invalid params\"}");
+        }
     }
 }

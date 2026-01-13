@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+	<title>小盒精灵 - TV远程控制</title>
+	<meta name="layoutmode" content="standard">
+	<meta name="theme-color" content="#0061A4">
+	<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+	<div class="container">
+		<!-- Header -->
+		<header class="app-header">
+			<div class="header-content">
+				<h1 class="app-title">📺 小盒精灵</h1>
+				<div class="version-info">
+					<span>当前版本：<span class="version-code" id="curVer">2.0.0</span></span>
+					<a href="#" target="_blank" id="newVerUrl" class="update-link" style="display:none;">
+						<span>最新版本：<span class="version-code" id="newVer">2.0.0</span></span>
+					</a>
+				</div>
+			</div>
+		</header>
+
+	    <!-- Navigation Tabs -->
+	    <nav class="tabs">
+		  <button class="tab active" data-tab="controls" aria-label="输入遥控">
+			  <span class="tab-icon">⌨️</span>
+			  <span class="tab-text">输入遥控</span>
+		  </button>
+		  <button class="tab" data-tab="touchpad" aria-label="触摸板">
+			  <span class="tab-icon">🖱️</span>
+			  <span class="tab-text">触摸板</span>
+		  </button>
+		  <button class="tab" data-tab="app" aria-label="应用管理">
+			  <span class="tab-icon">📱</span>
+			  <span class="tab-text">应用管理</span>
+		  </button>
+		  <button class="tab" data-tab="file" aria-label="文件管理">
+			  <span class="tab-icon">📁</span>
+			  <span class="tab-text">文件管理</span>
+		  </button>
+		  <button class="tab" data-tab="video" aria-label="视频直播">
+			  <span class="tab-icon">🎬</span>
+			  <span class="tab-text">视频直播</span>
+		  </button>
+		</nav>
+
+		<!-- Tab Content: Controls -->
+		<div class="tab-content" data-tab="controls">
+			<!-- Remote Control Panel -->
+			<section class="control-panel">
+				<div id="direction-btns" class="direction-btns">
+					<div class="control-btn home-btn" id="home-btn" data-key='3' data-bp='-586px -315px' aria-label="Home"></div>
+					<div class="control-btn vol-btn" id="vol-btn" data-key='164' data-bp='-711px -315px' aria-label="Volume"></div>
+					<div class="direction-btn left-btn" id="left-btn" data-key='21' data-bp='-1px -247px' aria-label="Left"></div>
+					<div class="direction-btn top-btn" id="top-btn" data-key='19' data-bp='-247px -1px' aria-label="Up"></div>
+					<div class="direction-btn right-btn" id="right-btn" data-key='22' data-bp='-493px -1px' aria-label="Right"></div>
+					<div class="direction-btn bottom-btn" id="bottom-btn" data-key='20' data-bp='-247px -247px' aria-label="Down"></div>
+					<div class="direction-btn center-btn" id="center-btn" data-key='23' data-bp='-740px -1px' aria-label="OK"></div>
+					<div class="control-btn back-btn" id="back-btn" data-key='4' data-bp='-586px -251px' aria-label="Back"></div>
+					<div class="control-btn menu-btn" id="menu-btn" data-key='82' data-bp='-711px -251px' aria-label="Menu"></div>
+					<div class="control-btn vol1-btn" id="vol1-btn" data-key='24' data-bp='-711px -379px' aria-label="Volume Up"></div>
+					<div class="control-btn vol2-btn" id="vol2-btn" data-key='25' data-bp='-711px -379px' aria-label="Volume Down"></div>
+				</div>
+			</section>
+
+			<!-- Text Input Panel -->
+			<section class="input-panel">
+				<div class="input-wrapper">
+					<textarea id="inputarea" rows="2" placeholder="点此为电视输入文字" aria-label="输入框"></textarea>
+					<button id="confirm" class="btn-primary">输入</button>
+				</div>
+				<div class="action-buttons">
+				    <button type="button" class="btn-secondary" id="btnDel" data-key='67' aria-label="退格">退格</button>
+				    <button type="button" class="btn-secondary" id="btnCls" data-key='cls' aria-label="清空">清空</button>
+				</div>
+			</section>
+
+			<!-- File Upload Panel -->
+			<section class="upload-panel">
+				<div class="upload-wrapper">
+					<input type="file" id="upfile" value=".." aria-label="选择文件">
+				    <button type="button" class="btn-primary upload-btn" id="btnUpload">传送文件</button>
+					<div class="progress-bar">
+					    <div class="progress-fill" id="processbar1"></div>
+					    <span class="progress-text">0%</span>
+					</div>
+				    <button type="button" class="btn-danger upload-btn" id="btnClear">清除缓存</button>
+				</div>
+				<div class="upload-settings">
+				   <label class="checkbox-label">
+					   <input type="checkbox" checked id="cbAutoInstall">
+					   <span>传送后自动安装APK或播放视频</span>
+				   </label>
+			    </div>
+			</section>
+		</div>
+
+		<!-- Tab Content: Touchpad -->
+		<div class="tab-content hidden" data-tab="touchpad">
+			<section class="touchpad-panel">
+				<div class="touchpad-container">
+					<div id="touchpad" class="touchpad-area" aria-label="触摸板区域">
+						<div class="touchpad-hint">
+							<span class="hint-icon">👆</span>
+							<span class="hint-text">滑动控制鼠标<br/>单击=左键 | 双指=右键</span>
+						</div>
+					</div>
+					<div class="mouse-buttons">
+						<button id="mouse-left" class="mouse-btn" aria-label="左键">左键</button>
+						<button id="mouse-longclick" class="mouse-btn" aria-label="长按">长按</button>
+						<button id="mouse-right" class="mouse-btn" aria-label="右键">右键</button>
+					</div>
+					<div class="swipe-buttons">
+						<button id="swipe-up" class="swipe-btn" aria-label="上划">↑ 上划</button>
+						<button id="swipe-down" class="swipe-btn" aria-label="下划">↓ 下划</button>
+					</div>
+					<div class="touchpad-settings">
+						<label class="sensitivity-label">
+							<span>灵敏度: <strong id="sensitivity-value">1.5</strong></span>
+							<input type="range" id="sensitivity" min="0.5" max="3" step="0.1" value="1.5" aria-label="鼠标灵敏度">
+						</label>
+						<label class="sensitivity-label">
+							<span>滑动距离: <strong id="swipe-distance-value">300</strong>px</span>
+							<input type="range" id="swipe-distance" min="100" max="800" step="50" value="300" aria-label="滑动距离">
+						</label>
+						<label class="sensitivity-label">
+							<span>长按时间: <strong id="longpress-duration-value">600</strong>ms</span>
+							<input type="range" id="longpress-duration" min="300" max="1500" step="100" value="600" aria-label="长按时间">
+						</label>
+					</div>
+					<div class="touchpad-status">
+						<span id="mouse-pos" class="status-item">位置: --</span>
+						<span id="adb-status" class="status-item">ADB: 检测中...</span>
+					</div>
+				</div>
+			</section>
+		</div>
+
+		<!-- Tab Content: App Management -->
+		<div class="tab-content hidden" data-tab="app">
+			<section class="app-panel">
+				<div class="app-toolbar">
+					<a class="btn-secondary" id="showSettings">⚙️ 系统设置</a>
+					<label class="checkbox-label">
+						<input type="checkbox" id="cbListSystem">
+						<span>显示系统应用</span>
+					</label>
+					<label class="checkbox-label danger">
+						<input type="checkbox" id="cbUninstall">
+						<span>卸载应用</span>
+					</label>
+				</div>
+				<div class="app-list"></div>
+			</section>
+
+			<section class="upload-panel">
+				<div class="upload-wrapper">
+					<input type="file" id="upfile" value=".." aria-label="选择APK文件">
+				    <button type="button" class="btn-primary upload-btn" id="btnUpload">上传APK</button>
+					<div class="progress-bar">
+					    <div class="progress-fill" id="processbar1"></div>
+					    <span class="progress-text">0%</span>
+					</div>
+				</div>
+			</section>
+		</div>
+
+		<!-- Tab Content: File Management -->
+		<div class="tab-content hidden" data-tab="file">
+			<section class="file-panel">
+				<div class="file-toolbar">
+					<div class="file-upload">
+						<input type="file" id="upfile2" value=".." aria-label="选择文件">
+						<button type="button" class="btn-primary" id="btnUpload2">上传文件</button>
+						<div class="progress-bar compact">
+							<div class="progress-fill" id="processbar2"></div>
+							<span class="progress-text">0%</span>
+						</div>
+					</div>
+					<label class="checkbox-label">
+						<input type="checkbox" id="cbFileSelect">
+						<span>选择</span>
+					</label>
+				</div>
+				<div class="file-operations hidden">
+					<div class="file-oper-items"></div>
+					<div class="file-oper-actions">
+						<button type="button" class="btn-secondary" id="btnCopy" onclick="postFileAction('copy');">复制</button>
+						<button type="button" class="btn-secondary" id="btnCut" onclick="postFileAction('cut');">剪切</button>
+						<button type="button" class="btn-danger" id="btnDelete" onclick="postFileAction('delete');">删除</button>
+					</div>
+				</div>
+				<div class="file-browser">
+					<div class="file-info" id="diskSpace"></div>
+					<div class="current-path" id="curPath"></div>
+					<div class="file-list"></div>
+				</div>
+			</section>
+		</div>
+
+		<!-- Tab Content: Video Streaming -->
+		<div class="tab-content hidden" data-tab="video">
+			<section class="video-panel">
+				<div class="video-toolbar">
+					<label class="input-label">
+						每次快进
+						<input type="text" id="speedInterval" maxlength="3" value="5" class="input-small" aria-label="快进秒数">
+						秒
+					</label>
+					<label class="checkbox-label">
+						<input type="checkbox" id="playUseSystem">
+						<span>调用系统播放器</span>
+					</label>
+					<button type="button" class="btn-warning" id="stopPlay">停止边下边播</button>
+				</div>
+
+				<div class="video-input">
+					<div class="input-group">
+						<span class="input-label">网络视频：</span>
+						<a href="javascript:$('#playUrl').val('');" class="link-small">[清空地址]</a>
+					</div>
+					<div class="input-row">
+						<input type="text" id="playUrl" placeholder="http/ftp/thunder/ed2k/rtmp/mms" aria-label="视频地址">
+						<button type="button" class="btn-primary" id="btnPlay">远程播放</button>
+					</div>
+				</div>
+
+				<div class="torrent-input">
+					<span class="input-label">种子视频：</span>
+					<input type="file" id="upfile3" value=".." aria-label="选择种子文件">
+					<button type="button" class="btn-secondary" id="btnUploadTorrent">上传种子</button>
+					<button type="button" class="btn-primary" id="btnPlayTorrent">开始播放</button>
+					<select id="torrentItems" class="select-input" aria-label="选择视频文件"></select>
+				</div>
+
+				<div class="tv-section">
+					<div class="tv-header">
+						<span class="tv-title">电视节目：</span>
+						<span class="tv-hint">需要更改直播源？<a href="#" id="btnShowTVEdit" class="link-primary">点击这里</a></span>
+					</div>
+					<div class="tv-items"></div>
+				</div>
+
+				<div class="tv-editor hidden">
+					<textarea id="tvData" class="editor-textarea" placeholder="编辑直播源..." aria-label="直播源编辑器"></textarea>
+					<div class="editor-actions">
+						<button type="button" class="btn-primary" id="btnTVEdit">修改</button>
+						<button type="button" class="btn-secondary" id="btnTVCancel">取消</button>
+					</div>
+				</div>
+			</section>
+		</div>
+	</div>
+
+	<script src="/jquery_min.js"></script>
+	<script src="/ime_core.js"></script>
+</body>
+</html>

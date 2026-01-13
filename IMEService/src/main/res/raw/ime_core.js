@@ -532,6 +532,8 @@ var touchpad = {
 	lastX: 0,
 	lastY: 0,
 	sensitivity: 1.5,
+	swipeDistance: 300,
+	longPressDuration: 600,
 	fingers: 0,
 	tapStartTime: 0,
 	tapStartX: 0,
@@ -569,19 +571,41 @@ function initTouchpad() {
 		e.preventDefault();
 		mouseClick(0);
 	});
-	$('#mouse-middle').on('click touchend', function(e) {
+	$('#mouse-longclick').on('click touchend', function(e) {
 		e.preventDefault();
-		mouseClick(2);
+		mouseLongClick();
 	});
 	$('#mouse-right').on('click touchend', function(e) {
 		e.preventDefault();
 		mouseClick(1);
 	});
 
+	// 上划下划按钮
+	$('#swipe-up').on('click touchend', function(e) {
+		e.preventDefault();
+		mouseSwipeUp();
+	});
+	$('#swipe-down').on('click touchend', function(e) {
+		e.preventDefault();
+		mouseSwipeDown();
+	});
+
 	// 灵敏度调节
 	$('#sensitivity').on('input', function() {
 		touchpad.sensitivity = parseFloat(this.value);
 		$('#sensitivity-value').text(touchpad.sensitivity.toFixed(1));
+	});
+
+	// 滑动距离调节
+	$('#swipe-distance').on('input', function() {
+		touchpad.swipeDistance = parseInt(this.value);
+		$('#swipe-distance-value').text(touchpad.swipeDistance);
+	});
+
+	// 长按时间调节
+	$('#longpress-duration').on('input', function() {
+		touchpad.longPressDuration = parseInt(this.value);
+		$('#longpress-duration-value').text(touchpad.longPressDuration);
 	});
 
 	console.log('Touchpad initialized');
@@ -704,6 +728,48 @@ function mouseScroll(dy) {
 	if (dy === 0) return;
 	$.post("/mouse/scroll", { dy: dy }, function(data) {
 		console.log('scroll:', data);
+	});
+}
+
+// 发送上划手势
+function mouseSwipeUp() {
+	$.post("/mouse/swipeup", { distance: touchpad.swipeDistance }, function(data) {
+		console.log('swipe up:', data);
+		if (data && data.status === 'ok') {
+			// 视觉反馈
+			$('#swipe-up').css('transform', 'scale(0.95)');
+			setTimeout(function() {
+				$('#swipe-up').css('transform', '');
+			}, 100);
+		}
+	});
+}
+
+// 发送下划手势
+function mouseSwipeDown() {
+	$.post("/mouse/swipedown", { distance: touchpad.swipeDistance }, function(data) {
+		console.log('swipe down:', data);
+		if (data && data.status === 'ok') {
+			// 视觉反馈
+			$('#swipe-down').css('transform', 'scale(0.95)');
+			setTimeout(function() {
+				$('#swipe-down').css('transform', '');
+			}, 100);
+		}
+	});
+}
+
+// 发送长按
+function mouseLongClick() {
+	$.post("/mouse/longclick", { duration: touchpad.longPressDuration }, function(data) {
+		console.log('long click:', data);
+		if (data && data.status === 'ok') {
+			// 视觉反馈
+			$('#mouse-longclick').css('transform', 'scale(0.95)');
+			setTimeout(function() {
+				$('#mouse-longclick').css('transform', '');
+			}, 100);
+		}
 	});
 }
 
