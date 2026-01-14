@@ -31,6 +31,11 @@ public class MouseAccessibilityService extends AccessibilityService {
     private int screenWidth;
     private int screenHeight;
 
+    // 自动隐藏光标相关
+    private static final long CURSOR_HIDE_DELAY = 5000; // 5秒不动就隐藏
+    private Runnable hideCursorRunnable;
+    private boolean isCursorHidden = false;
+
     public static MouseAccessibilityService getInstance() {
         return instance;
     }
@@ -76,13 +81,17 @@ public class MouseAccessibilityService extends AccessibilityService {
         Log.i(TAG, "MouseAccessibilityService interrupted");
     }
 
-    @Override
+@Override
     public void onDestroy() {
         super.onDestroy();
         instance = null;
         if (cursorOverlay != null) {
             cursorOverlay.hide();
             cursorOverlay = null;
+        }
+        // 清理自动隐藏任务
+        if (hideCursorRunnable != null) {
+            mainHandler.removeCallbacks(hideCursorRunnable);
         }
         Log.i(TAG, "MouseAccessibilityService destroyed");
     }
@@ -96,7 +105,7 @@ public class MouseAccessibilityService extends AccessibilityService {
         // 初始位置为屏幕中心
         mouseX = screenWidth / 2;
         mouseY = screenHeight / 2;
-        Log.i(TAG, "Screen size: " + screenWidth + "x" + screenHeight);
+Log.i(TAG, "Screen size: " + screenWidth + "x" + screenHeight);
     }
 
     private void initCursorOverlay() {
@@ -104,32 +113,70 @@ public class MouseAccessibilityService extends AccessibilityService {
             cursorOverlay = new MouseCursorOverlay(this);
             cursorOverlay.show();
             cursorOverlay.updatePosition(mouseX, mouseY);
+
+            // 初始化自动隐藏任务
+            hideCursorRunnable = this::autoHideCursor;
         });
     }
 
     /**
+     * 自动隐藏光标
+     */
+    private void autoHideCursor() {
+        if (cursorOverlay != null && cursorOverlay.isShowing()) {
+            cursorOverlay.hide();
+            isCursorHidden = true;
+            Log.i(TAG, "Cursor auto-hidden due to inactivity");
+        }
+    }
+
+    /**
+     * 重置自动隐藏计时器
+     */
+    private void resetHideTimer() {
+        // 取消之前的隐藏任务
+        mainHandler.removeCallbacks(hideCursorRunnable);
+
+        // 如果光标当前是隐藏的，先显示出来（必须在主线程执行）
+        if (isCursorHidden && cursorOverlay != null) {
+            mainHandler.post(() -> {
+                cursorOverlay.show();
+                cursorOverlay.updatePosition(mouseX, mouseY);
+            });
+            isCursorHidden = false;
+        }
+
+        // 重新安排5秒后隐藏
+        mainHandler.postDelayed(hideCursorRunnable, CURSOR_HIDE_DELAY);
+    }
+
+/**
      * 显示鼠标光标
      */
     public void showCursor() {
         mainHandler.post(() -> {
             if (cursorOverlay != null) {
                 cursorOverlay.show();
+                resetHideTimer();
             }
         });
     }
 
-    /**
+/**
      * 隐藏鼠标光标
      */
     public void hideCursor() {
         mainHandler.post(() -> {
             if (cursorOverlay != null) {
                 cursorOverlay.hide();
+                isCursorHidden = true;
+                // 取消自动隐藏计时器
+                mainHandler.removeCallbacks(hideCursorRunnable);
             }
         });
     }
 
-    /**
+/**
      * 移动鼠标
      * @param dx X方向移动距离
      * @param dy Y方向移动距离
@@ -145,15 +192,21 @@ public class MouseAccessibilityService extends AccessibilityService {
             }
         });
 
+        // 重置自动隐藏计时器
+        resetHideTimer();
+
         return new int[]{mouseX, mouseY};
     }
 
-    /**
+/**
      * 鼠标点击
      * @param button 按钮 (0=左键, 1=右键/返回, 2=中键)
      * @return 是否成功
      */
     public boolean click(int button) {
+        // 重置自动隐藏计时器
+        resetHideTimer();
+
         if (button == 1) {
             // 右键 - 执行返回操作（符合安卓设备鼠标操作习惯）
             return performGlobalAction(GLOBAL_ACTION_BACK);
@@ -167,12 +220,15 @@ public class MouseAccessibilityService extends AccessibilityService {
         }
     }
 
-    /**
+/**
      * 鼠标滚动
      * @param dy 滚动距离 (正数向下，负数向上)
      * @return 是否成功
      */
     public boolean scroll(int dy) {
+        // 重置自动隐藏计时器
+        resetHideTimer();
+
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
             Log.e(TAG, "dispatchGesture requires API 24+");
             return false;
@@ -352,12 +408,15 @@ public class MouseAccessibilityService extends AccessibilityService {
         return new int[]{mouseX, mouseY};
     }
 
-    /**
+/**
      * 执行上划手势
      * @param distance 滑动距离（像素）
      * @return 是否成功
      */
     public boolean swipeUp(int distance) {
+        // 重置自动隐藏计时器
+        resetHideTimer();
+
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
             return performSwipeViaShell(mouseX, mouseY, mouseX, mouseY - distance);
         }
@@ -367,12 +426,15 @@ public class MouseAccessibilityService extends AccessibilityService {
         return performSwipeWithFallback(mouseX, startY, mouseX, endY, 200);
     }
 
-    /**
+/**
      * 执行下划手势
      * @param distance 滑动距离（像素）
      * @return 是否成功
      */
     public boolean swipeDown(int distance) {
+        // 重置自动隐藏计时器
+        resetHideTimer();
+
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
             return performSwipeViaShell(mouseX, mouseY, mouseX, mouseY + distance);
         }
@@ -382,12 +444,15 @@ public class MouseAccessibilityService extends AccessibilityService {
         return performSwipeWithFallback(mouseX, startY, mouseX, endY, 200);
     }
 
-    /**
+/**
      * 执行长按
      * @param duration 长按时间（毫秒）
      * @return 是否成功
      */
     public boolean longClick(int duration) {
+        // 重置自动隐藏计时器
+        resetHideTimer();
+
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
             return performLongClickViaShell(mouseX, mouseY, duration);
         }
