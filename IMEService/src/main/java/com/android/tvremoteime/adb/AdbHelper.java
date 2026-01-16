@@ -198,15 +198,16 @@ public class AdbHelper {
             }
         }
     }
-    public static boolean initService(Context context){
-        if(instance != null){
-            if(!instance.isRunning()){
-                instance.init(context, RemoteServer.getLocalIPAddress(context), Environment.adbServerPort);
-            }
-            return true;
-        }
-        return false;
-    }
+public static boolean initService(Context context){
+		if(instance != null){
+			if(!instance.isRunning()){
+				instance.init(context, RemoteServer.getLocalIPAddress(context), Environment.adbServerPort);
+			}
+			// Only return true if actually connected to ADB
+			return instance.connection != null;
+		}
+		return false;
+	}
     public static void stopService(){
         if(instance != null) instance.stop();
     }

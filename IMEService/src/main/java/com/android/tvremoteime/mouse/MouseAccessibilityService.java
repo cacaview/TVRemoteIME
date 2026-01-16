@@ -114,8 +114,9 @@ Log.i(TAG, "Screen size: " + screenWidth + "x" + screenHeight);
             cursorOverlay.show();
             cursorOverlay.updatePosition(mouseX, mouseY);
 
-            // 初始化自动隐藏任务
+            // 初始化自动隐藏任务并启动计时器
             hideCursorRunnable = this::autoHideCursor;
+            resetHideTimer(); // 启动5秒自动隐藏计时器
         });
     }
 
